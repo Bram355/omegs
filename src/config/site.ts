@@ -42,7 +42,7 @@ export const siteConfig = {
     android: { label: 'Google Play', url: playStoreUrl, isPlaceholder: !playStoreUrl } satisfies StoreLink,
   },
   /** Shows the "demo mode" notices on auth, booking, and contact flows. */
-  demoMode: env.VITE_DEMO_MODE !== 'false',
+  demoMode: env.VITE_DEMO_MODE === 'true' || !(env.VITE_SUPABASE_URL && env.VITE_SUPABASE_ANON_KEY),
 } as const
 
 export type SocialPlatform = (typeof siteConfig.social)[number]['platform']

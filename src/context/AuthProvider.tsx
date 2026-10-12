@@ -1,10 +1,18 @@
-import { useCallback, useMemo, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { authService } from '../services/auth'
 import type { SignInInput, SignUpInput } from '../types'
 import { AuthContext, type AuthContextValue } from './auth-context'
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState(() => authService.getCurrentUser())
+
+  useEffect(() => {
+    let active = true
+    authService.refresh?.().then((next) => active && setUser(next), () => undefined)
+    return () => {
+      active = false
+    }
+  }, [])
 
   const signIn = useCallback(async (input: SignInInput) => {
     const next = await authService.signIn(input)

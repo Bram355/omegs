@@ -6,6 +6,8 @@ import { propertyTypes, timeSlots } from '../../services/booking'
 import type { Booking } from '../../types'
 import { Button, ButtonLink } from '../ui/Button'
 import { DemoNotice } from '../ui/DemoNotice'
+import { PayButton } from './PayButton'
+import { formatMoney } from '../../lib/money'
 
 export function BookingConfirmation({ booking, onNew }: { booking: Booking; onNew(): void }) {
   const headingRef = useRef<HTMLHeadingElement>(null)
@@ -13,13 +15,14 @@ export function BookingConfirmation({ booking, onNew }: { booking: Booking; onNe
   const service = getServiceById(booking.serviceId)
 
   const rows = [
-    ['Reference', booking.id],
+    ['Reference', booking.reference ?? booking.id],
     ['Service', service?.name ?? booking.serviceId],
     ['Date', formatDate(booking.date)],
     ['Time window', timeSlots.find((t) => t.value === booking.timeSlot)?.label ?? booking.timeSlot],
     ['Property', propertyTypes.find((p) => p.value === booking.propertyType)?.label ?? booking.propertyType],
     ['Address', booking.address],
     ['Contact phone', booking.phone],
+    ...(booking.amountMinor && booking.currency ? [['Price', formatMoney(booking.amountMinor, booking.currency)]] : []),
   ]
 
   return (
@@ -30,7 +33,11 @@ export function BookingConfirmation({ booking, onNew }: { booking: Booking; onNe
       <h2 ref={headingRef} tabIndex={-1} className="mt-6 text-2xl font-bold tracking-tight outline-none sm:text-3xl">
         Booking request recorded
       </h2>
-      <p className="mt-2 text-slate-600">Here’s a summary of your request.</p>
+      <p className="mt-2 text-slate-600">
+        {booking.reference
+          ? 'We’ve received your request and will confirm it shortly. You can pay now to secure your slot.'
+          : 'Here’s a summary of your request.'}
+      </p>
       <DemoNotice className="mt-6">
         This booking was saved only in your browser. It has not been sent to Omegs and no cleaner has been scheduled.
       </DemoNotice>
@@ -48,7 +55,10 @@ export function BookingConfirmation({ booking, onNew }: { booking: Booking; onNe
           </div>
         )}
       </dl>
-      <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+      <div className="mt-6">
+        <PayButton booking={booking} />
+      </div>
+      <div className="mt-6 flex flex-col gap-3 sm:flex-row">
         <Button onClick={onNew}>Book another cleaning</Button>
         <ButtonLink to="/download" variant="secondary">Get the Omegs app</ButtonLink>
       </div>

@@ -4,7 +4,15 @@ import { getServiceById } from '../../data/services'
 import { cn } from '../../lib/cn'
 import { formatDate } from '../../lib/date'
 import { timeSlots } from '../../services/booking'
-import type { Booking } from '../../types'
+import type { Booking, BookingStatus } from '../../types'
+import { PayButton } from './PayButton'
+
+const statusStyles: Record<BookingStatus, [string, string]> = {
+  requested: ['Requested', 'bg-mint-100 text-mint-700'],
+  confirmed: ['Confirmed', 'bg-brand-100 text-brand-800'],
+  completed: ['Completed', 'bg-slate-100 text-slate-700'],
+  cancelled: ['Cancelled', 'bg-slate-100 text-slate-600'],
+}
 
 interface BookingListProps {
   bookings: Booking[] | null
@@ -45,13 +53,17 @@ export function BookingList({ bookings, error, onCancel }: BookingListProps) {
                   {formatDate(b.date)} · {timeSlots.find((t) => t.value === b.timeSlot)?.label.split(' (')[0]}
                 </p>
               </div>
-              <span className={cn('shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-semibold', cancelled ? 'bg-slate-100 text-slate-600' : 'bg-mint-100 text-mint-700')}>
-                {cancelled ? 'Cancelled' : 'Requested'}
-              </span>
+              <div className="flex shrink-0 flex-col items-end gap-1">
+                <span className={cn('rounded-full px-2.5 py-0.5 text-[11px] font-semibold', statusStyles[b.status][1])}>
+                  {statusStyles[b.status][0]}
+                </span>
+                {b.paymentStatus === 'paid' && <span className="text-[11px] font-semibold text-mint-700">Paid</span>}
+              </div>
             </div>
             <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-3">
-              <span className="font-mono text-[11px] text-slate-400">{b.id}</span>
-              {!cancelled && (
+              <span className="font-mono text-[11px] text-slate-400">{b.reference ?? b.id}</span>
+              <PayButton booking={b} compact />
+              {!cancelled && b.status !== 'completed' && (
                 <button
                   type="button"
                   disabled={cancelling === b.id}

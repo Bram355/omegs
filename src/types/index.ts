@@ -79,13 +79,19 @@ export interface BookingInput {
   notes: string
 }
 
-export type BookingStatus = 'requested' | 'cancelled'
+export type BookingStatus = 'requested' | 'confirmed' | 'completed' | 'cancelled'
+export type PaymentStatus = 'unpaid' | 'pending' | 'paid' | 'refunded' | 'failed'
 
 export interface Booking extends BookingInput {
   id: string
   userId: string
   status: BookingStatus
   createdAt: string
+  /** Human-friendly reference (backend bookings only). */
+  reference?: string
+  paymentStatus?: PaymentStatus
+  amountMinor?: number
+  currency?: string
 }
 
 export interface ContactInput {

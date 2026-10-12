@@ -1,4 +1,5 @@
 import { wait } from '../lib/date'
+import { supabase, supabaseSessionKey } from '../lib/supabase'
 import type { AuthUser, SignInInput, SignUpInput } from '../types'
 import { createId, readJSON, writeJSON } from './storage'
 
@@ -12,6 +13,8 @@ export interface AuthService {
   signUp(input: SignUpInput): Promise<AuthUser>
   signOut(): Promise<void>
   requestPasswordReset(email: string): Promise<void>
+  /** Re-validates the stored session with the provider (optional). */
+  refresh?(): Promise<AuthUser | null>
 }
 
 export class AuthError extends Error {
@@ -115,4 +118,69 @@ export const demoAuthService: AuthService = {
   },
 }
 
-export const authService: AuthService = demoAuthService
+/* ------------------------------------------------------------------------------------------
+ * SUPABASE IMPLEMENTATION — used automatically when Supabase env vars are configured.
+ * ---------------------------------------------------------------------------------------- */
+
+interface SupabaseUserLike {
+  id: string
+  email?: string
+  created_at: string
+  user_metadata?: { full_name?: string; phone?: string }
+}
+
+const fromSupabaseUser = (u: SupabaseUserLike): AuthUser => ({
+  id: u.id,
+  email: u.email ?? '',
+  fullName: u.user_metadata?.full_name ?? '',
+  phone: u.user_metadata?.phone ?? '',
+  createdAt: u.created_at,
+})
+
+function mapAuthError(message: string): AuthError {
+  if (/invalid login credentials/i.test(message)) return new AuthError('Incorrect email or password. Please try again.', 'password')
+  if (/email not confirmed/i.test(message)) return new AuthError('Please confirm your email first — check your inbox for the link.', 'email')
+  if (/already registered|already exists/i.test(message)) return new AuthError('An account with this email already exists. Try logging in instead.', 'email')
+  return new AuthError(message)
+}
+
+function createSupabaseAuthService(client: NonNullable<typeof supabase>): AuthService {
+  return {
+    getCurrentUser() {
+      const stored = readJSON<{ user?: SupabaseUserLike } | null>(localStorage, supabaseSessionKey, null)
+      return stored?.user ? fromSupabaseUser(stored.user) : null
+    },
+    async refresh() {
+      const { data } = await client.auth.getUser()
+      return data.user ? fromSupabaseUser(data.user) : null
+    },
+    async signIn({ email, password }) {
+      const { data, error } = await client.auth.signInWithPassword({ email: normalizeEmail(email), password })
+      if (error || !data.user) throw mapAuthError(error?.message ?? 'Could not log in.')
+      return fromSupabaseUser(data.user)
+    },
+    async signUp({ fullName, email, phone, password }) {
+      const { data, error } = await client.auth.signUp({
+        email: normalizeEmail(email),
+        password,
+        options: { data: { full_name: fullName.trim(), phone: phone.trim() }, emailRedirectTo: `${window.location.origin}/login` },
+      })
+      if (error || !data.user) throw mapAuthError(error?.message ?? 'Could not create your account.')
+      if (!data.session) {
+        throw new AuthError('Account created. Check your inbox to confirm your email, then log in.')
+      }
+      return fromSupabaseUser(data.user)
+    },
+    async signOut() {
+      await client.auth.signOut()
+    },
+    async requestPasswordReset(email) {
+      const { error } = await client.auth.resetPasswordForEmail(normalizeEmail(email), {
+        redirectTo: `${window.location.origin}/login`,
+      })
+      if (error) throw new AuthError(error.message, 'email')
+    },
+  }
+}
+
+export const authService: AuthService = supabase ? createSupabaseAuthService(supabase) : demoAuthService

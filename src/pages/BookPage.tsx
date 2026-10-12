@@ -11,6 +11,7 @@ import { ResponsiveImage } from '../components/ui/ResponsiveImage'
 import { getServiceById } from '../data/services'
 import { useAuth } from '../hooks/useAuth'
 import { useSeo } from '../hooks/useSeo'
+import { siteConfig } from '../config/site'
 import { bookingService } from '../services/booking'
 import type { Booking } from '../types'
 
@@ -47,6 +48,29 @@ export default function BookPage() {
     }
   }, [user])
 
+  const paymentRef = params.get('reference')
+  const [paymentNote, setPaymentNote] = useState<string | null>(null)
+  useEffect(() => {
+    if (!user || !paymentRef || !bookingService.verifyPayment) return
+    let active = true
+    bookingService.verifyPayment(paymentRef).then(
+      (paid) => {
+        if (!active) return
+        setPaymentNote(paid ? 'Payment received — thank you! Your booking is marked as paid.' : 'We couldn’t confirm that payment yet. If you were charged, contact us and quote your booking reference.')
+        bookingService.listBookings(user.id).then((list) => active && setBookings(list), () => undefined)
+      },
+      () => active && setPaymentNote('We couldn’t confirm that payment yet. Please refresh in a moment.'),
+    )
+    const next = new URLSearchParams(params)
+    next.delete('reference')
+    next.delete('trxref')
+    setParams(next, { replace: true })
+    return () => {
+      active = false
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, paymentRef])
+
   const handleServiceChange = (id: string) => {
     const next = new URLSearchParams(params)
     next.set('service', id)
@@ -62,6 +86,11 @@ export default function BookPage() {
         description={`Hi ${user?.fullName.split(' ')[0] ?? 'there'} — tell us what you need and when. It only takes a minute.`}
       />
       <section className="py-12 sm:py-16">
+        {paymentNote && (
+          <Container className="mb-8">
+            <p role="status" className="rounded-2xl border border-mint-200 bg-mint-50 p-4 text-sm font-medium text-brand-950">{paymentNote}</p>
+          </Container>
+        )}
         <Container className="grid gap-10 lg:grid-cols-12">
           <div className="lg:col-span-8">
             <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-soft sm:p-10">
@@ -117,7 +146,9 @@ export default function BookPage() {
             )}
             <div className="rounded-3xl bg-surface p-6">
               <h2 className="text-lg font-bold">My bookings</h2>
-              <p className="mt-1 mb-4 text-xs text-slate-500">Demo requests saved on this device.</p>
+              <p className="mt-1 mb-4 text-xs text-slate-500">
+                {siteConfig.demoMode ? 'Demo requests saved on this device.' : 'Your requests, confirmations, and payments.'}
+              </p>
               <BookingList
                 bookings={bookings}
                 error={listError}
