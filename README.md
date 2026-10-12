@@ -85,3 +85,36 @@ Each demo implements an interface in `src/services/` (`AuthService`, `BookingSer
 - Replace placeholder phone, email, address, hours and social links in `src/config/site.ts`.
 - Replace sample testimonials with genuine, consented customer reviews; confirm pricing.
 - Set `VITE_DEMO_MODE=false` and configure SPA fallback rewrites on the host.
+
+## Backend (Supabase) and payments
+
+Everything server-side lives in `supabase/`:
+
+- `migrations/20261012000000_init.sql`: tables (`profiles`, `bookings`, `contact_messages`, `app_waitlist`, `app_settings`), row level security, the server-enforced price, and owner/admin role assignment (the `admin_email` in `app_settings` becomes admin on signup).
+- `functions/notify`: emails the owner (via Resend) about new bookings and contact messages.
+- `functions/paystack-init`, `paystack-verify`, `paystack-webhook`: card checkout through Paystack.
+
+Required function secrets: `RESEND_API_KEY`, `PAYSTACK_SECRET_KEY`. `EMAIL_FROM` is optional and needs a verified Resend domain before customers get emails.
+
+```bash
+npx supabase link --project-ref <ref>
+npx supabase db push
+npx supabase secrets set RESEND_API_KEY=... PAYSTACK_SECRET_KEY=...
+npx supabase functions deploy notify paystack-init paystack-verify
+npx supabase functions deploy paystack-webhook --no-verify-jwt
+```
+
+Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` for the website. When both are set, demo mode turns off automatically. The owner dashboard is at `/admin`.
+
+## Mobile app (Expo)
+
+`mobile/` is an Expo Router app for iOS and Android. It uses the same Supabase backend and service catalogue.
+
+```bash
+cd mobile && npm install
+cp .env.example .env.local      # EXPO_PUBLIC_SUPABASE_URL / _ANON_KEY
+npx expo start                  # scan the QR code with Expo Go
+npx eas-cli build -p android --profile preview   # shareable APK
+```
+
+After editing `src/data/services.ts`, run `node scripts/export-mobile-data.mjs` so the app picks up the changes.
