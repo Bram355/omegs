@@ -1,0 +1,118 @@
+import { wait } from '../lib/date'
+import type { AuthUser, SignInInput, SignUpInput } from '../types'
+import { createId, readJSON, writeJSON } from './storage'
+
+/**
+ * Authentication contract used by the UI. Swap `demoAuthService` for an implementation
+ * backed by Firebase Auth, Supabase Auth, or a custom API without changing any components.
+ */
+export interface AuthService {
+  getCurrentUser(): AuthUser | null
+  signIn(input: SignInInput): Promise<AuthUser>
+  signUp(input: SignUpInput): Promise<AuthUser>
+  signOut(): Promise<void>
+  requestPasswordReset(email: string): Promise<void>
+}
+
+export class AuthError extends Error {
+  field?: 'email' | 'password'
+  constructor(message: string, field?: 'email' | 'password') {
+    super(message)
+    this.name = 'AuthError'
+    this.field = field
+  }
+}
+
+/* ------------------------------------------------------------------------------------------
+ * DEMO IMPLEMENTATION — NOT SECURE.
+ * Accounts live only in this browser's localStorage. Passwords are hashed client-side purely
+ * to avoid storing them in plain text; this is not a substitute for a real auth provider.
+ * ---------------------------------------------------------------------------------------- */
+
+const USERS_KEY = 'omegs.demo.users'
+const SESSION_KEY = 'omegs.demo.session'
+
+interface StoredUser extends AuthUser {
+  passwordHash: string
+}
+
+async function hashPassword(password: string): Promise<string> {
+  const data = new TextEncoder().encode(`omegs-demo:${password}`)
+  if (typeof crypto !== 'undefined' && crypto.subtle) {
+    const digest = await crypto.subtle.digest('SHA-256', data)
+    return Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, '0')).join('')
+  }
+  // Fallback for non-secure contexts (e.g. http on a LAN IP). Demo only.
+  let h = 0
+  for (const byte of data) h = (Math.imul(31, h) + byte) | 0
+  return `fallback-${h >>> 0}`
+}
+
+const normalizeEmail = (email: string) => email.trim().toLowerCase()
+const toPublicUser = ({ passwordHash: _passwordHash, ...user }: StoredUser): AuthUser => user
+
+function getUsers(): StoredUser[] {
+  return readJSON<StoredUser[]>(localStorage, USERS_KEY, [])
+}
+
+function persistSession(user: AuthUser, remember: boolean) {
+  localStorage.removeItem(SESSION_KEY)
+  sessionStorage.removeItem(SESSION_KEY)
+  writeJSON(remember ? localStorage : sessionStorage, SESSION_KEY, user)
+}
+
+export const demoAuthService: AuthService = {
+  getCurrentUser() {
+    return (
+      readJSON<AuthUser | null>(sessionStorage, SESSION_KEY, null) ??
+      readJSON<AuthUser | null>(localStorage, SESSION_KEY, null)
+    )
+  },
+
+  async signIn({ email, password, remember }) {
+    await wait(700)
+    const user = getUsers().find((u) => u.email === normalizeEmail(email))
+    if (!user) {
+      throw new AuthError('No demo account exists for this email on this device. Create one to continue.', 'email')
+    }
+    if (user.passwordHash !== (await hashPassword(password))) {
+      throw new AuthError('That password is incorrect. Please try again.', 'password')
+    }
+    const publicUser = toPublicUser(user)
+    persistSession(publicUser, remember)
+    return publicUser
+  },
+
+  async signUp({ fullName, email, phone, password }) {
+    await wait(900)
+    const users = getUsers()
+    const normalized = normalizeEmail(email)
+    if (users.some((u) => u.email === normalized)) {
+      throw new AuthError('A demo account with this email already exists. Try logging in instead.', 'email')
+    }
+    const user: StoredUser = {
+      id: createId('USR'),
+      fullName: fullName.trim(),
+      email: normalized,
+      phone: phone.trim(),
+      createdAt: new Date().toISOString(),
+      passwordHash: await hashPassword(password),
+    }
+    writeJSON(localStorage, USERS_KEY, [...users, user])
+    const publicUser = toPublicUser(user)
+    persistSession(publicUser, true)
+    return publicUser
+  },
+
+  async signOut() {
+    localStorage.removeItem(SESSION_KEY)
+    sessionStorage.removeItem(SESSION_KEY)
+  },
+
+  async requestPasswordReset() {
+    // A real provider would send a reset email here.
+    await wait(800)
+  },
+}
+
+export const authService: AuthService = demoAuthService

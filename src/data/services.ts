@@ -1,0 +1,263 @@
+import { Building2, HardHat, Home, PackageOpen, Sofa, Sparkles } from 'lucide-react'
+import { images } from '../assets/images'
+import type { Service, ServiceCategory } from '../types'
+
+/**
+ * Central service catalogue. Update copy, images, inclusions, and pricing here —
+ * every page (landing, directory, detail, booking, navigation) reads from this file.
+ * Pricing is intentionally unconfirmed: set `pricing.startingAt` once prices are approved.
+ */
+
+const DEFAULT_PRICING_NOTE =
+  'Pricing is confirmed after we understand your space. Final quotes depend on property size, condition, and any add-ons you choose.'
+
+export const serviceCategories: { id: ServiceCategory | 'all'; label: string }[] = [
+  { id: 'all', label: 'All services' },
+  { id: 'residential', label: 'Residential' },
+  { id: 'commercial', label: 'Commercial' },
+  { id: 'specialty', label: 'Specialty' },
+]
+
+export const services: Service[] = [
+  {
+    id: 'home-cleaning',
+    name: 'Home Cleaning',
+    category: 'residential',
+    icon: Home,
+    image: images.homeCleaning,
+    tagline: 'Reliable upkeep for a home that always feels fresh.',
+    shortDescription:
+      'Regular cleaning for kitchens, bathrooms, bedrooms, and living areas so your home stays fresh week after week.',
+    description: [
+      'Our home cleaning service keeps the spaces you live in every day clean, tidy, and comfortable. It is designed for recurring visits — weekly, every two weeks, or monthly — so your home never has the chance to fall behind.',
+      'Tell us about your priorities and any rooms that need extra attention, and our team will follow a consistent checklist on every visit.',
+    ],
+    idealFor: ['Busy households', 'Apartments and family homes', 'Recurring weekly or monthly visits'],
+    benefits: [
+      { title: 'Consistent results', description: 'A clear, repeatable checklist so you know what to expect every visit.' },
+      { title: 'More free time', description: 'Hand over routine chores and spend your time on what matters to you.' },
+      { title: 'Flexible frequency', description: 'Choose a schedule that suits your household and adjust it as needed.' },
+    ],
+    included: [
+      'Dusting of reachable surfaces, shelves, and décor',
+      'Vacuuming and mopping of all floors',
+      'Kitchen counters, sink, stovetop, and appliance exteriors',
+      'Bathroom sinks, toilets, showers, tubs, and mirrors',
+      'Making beds and tidying living areas',
+      'Emptying bins and replacing liners',
+    ],
+    pricing: { note: DEFAULT_PRICING_NOTE },
+    faqs: [
+      {
+        question: 'Do I need to provide cleaning supplies?',
+        answer: 'Supply arrangements will be confirmed during booking. If you have preferred products, you can note them in your booking details.',
+      },
+      {
+        question: 'Can I choose which rooms are cleaned?',
+        answer: 'Yes. Use the booking notes to highlight priority rooms or areas you would like the team to skip.',
+      },
+    ],
+  },
+  {
+    id: 'deep-cleaning',
+    name: 'Deep Cleaning',
+    category: 'residential',
+    icon: Sparkles,
+    image: images.deepCleaning,
+    tagline: 'A top-to-bottom reset for every corner of your home.',
+    shortDescription:
+      'A thorough, detailed clean that reaches the build-up regular cleaning misses — ideal for seasonal resets.',
+    description: [
+      'Deep cleaning goes beyond routine upkeep. Our team works through the details — baseboards, grout, behind appliances, and inside fixtures — to restore a genuinely fresh feeling to your home.',
+      'It is a great choice before or after a special occasion, at the change of seasons, or as a first visit before starting a regular cleaning plan.',
+    ],
+    idealFor: ['Seasonal or spring cleaning', 'First-time visits', 'Homes that need extra attention'],
+    benefits: [
+      { title: 'Detail-focused', description: 'Attention to the areas that are often overlooked during everyday cleaning.' },
+      { title: 'Healthier spaces', description: 'Reduce dust and grime build-up in high-touch and hard-to-reach places.' },
+      { title: 'A fresh starting point', description: 'Sets a clean baseline that makes regular upkeep easier.' },
+    ],
+    included: [
+      'Everything in Home Cleaning',
+      'Baseboards, door frames, and light switches',
+      'Detailed scrubbing of tiles and grout',
+      'Inside microwave and exterior of cabinets',
+      'Behind and under movable furniture and appliances',
+      'Window sills, tracks, and interior glass',
+    ],
+    pricing: { note: DEFAULT_PRICING_NOTE },
+    faqs: [
+      {
+        question: 'How long does a deep clean take?',
+        answer: 'Timing depends on the size and condition of your home. An estimate will be shared when your booking is reviewed.',
+      },
+      {
+        question: 'Can I add the inside of the oven or fridge?',
+        answer: 'Add-ons like interior oven or fridge cleaning can be requested in your booking notes.',
+      },
+    ],
+  },
+  {
+    id: 'office-cleaning',
+    name: 'Office Cleaning',
+    category: 'commercial',
+    icon: Building2,
+    image: images.officeCleaning,
+    tagline: 'A clean, professional workspace your team will appreciate.',
+    shortDescription:
+      'Dependable cleaning for offices and workspaces, scheduled around your business hours.',
+    description: [
+      'A clean workplace supports productivity and makes a strong impression on clients and visitors. Our office cleaning service covers workstations, shared areas, kitchens, and restrooms.',
+      'Visits can be scheduled before or after business hours to minimise disruption, with a scope tailored to the size and needs of your workspace.',
+    ],
+    idealFor: ['Small and medium offices', 'Co-working spaces', 'Studios and clinics'],
+    benefits: [
+      { title: 'Minimal disruption', description: 'Scheduling built around your working hours.' },
+      { title: 'Tailored scope', description: 'A cleaning plan that reflects how your space is actually used.' },
+      { title: 'Professional impression', description: 'A tidy, welcoming environment for staff and visitors.' },
+    ],
+    included: [
+      'Desks, workstations, and high-touch surfaces',
+      'Meeting rooms and reception areas',
+      'Kitchen and break-room cleaning',
+      'Restroom cleaning and restocking checks',
+      'Vacuuming and mopping of floors',
+      'Emptying bins and recycling',
+    ],
+    pricing: { note: 'Commercial pricing is quoted per site based on floor area, frequency, and scope of work.' },
+    faqs: [
+      {
+        question: 'Can you clean outside of business hours?',
+        answer: 'Yes. Select your preferred time window when booking and add any access instructions in the notes.',
+      },
+      {
+        question: 'Do you offer recurring office contracts?',
+        answer: 'Recurring schedules can be discussed once your initial booking request is reviewed.',
+      },
+    ],
+  },
+  {
+    id: 'move-in-move-out',
+    name: 'Move-In & Move-Out Cleaning',
+    category: 'residential',
+    icon: PackageOpen,
+    image: images.moveCleaning,
+    tagline: 'Start fresh in your new place — or leave the old one spotless.',
+    shortDescription:
+      'A complete clean of empty properties before you move in or after you move out.',
+    description: [
+      'Moving is demanding enough. Our move-in and move-out cleaning prepares an empty property so it is ready for its next chapter — whether you are settling in or handing over the keys.',
+      'Because the space is empty, our team can reach every surface, cupboard, and corner for a truly complete clean.',
+    ],
+    idealFor: ['Tenants and homeowners', 'Landlords between tenancies', 'Property managers'],
+    benefits: [
+      { title: 'Ready to live in', description: 'Move into a home that feels clean and welcoming from day one.' },
+      { title: 'Smoother handovers', description: 'Leave a property in clean condition for the next occupant.' },
+      { title: 'Less moving stress', description: 'One less task on your moving checklist.' },
+    ],
+    included: [
+      'Inside all cabinets, drawers, and closets',
+      'Kitchen appliances inside and out (when empty)',
+      'Full bathroom cleaning and descaling',
+      'Walls spot-cleaned, switches, and doors wiped',
+      'Floors vacuumed and mopped throughout',
+      'Windows, sills, and tracks',
+    ],
+    pricing: { note: DEFAULT_PRICING_NOTE },
+    faqs: [
+      {
+        question: 'Does the property need to be empty?',
+        answer: 'For the most thorough result, yes. Let us know in your booking notes if any furniture will remain.',
+      },
+      {
+        question: 'Can you work with my moving date?',
+        answer: 'Choose your preferred date when booking. We recommend booking as early as possible around busy moving periods.',
+      },
+    ],
+  },
+  {
+    id: 'sofa-upholstery',
+    name: 'Sofa & Upholstery Cleaning',
+    category: 'specialty',
+    icon: Sofa,
+    image: images.sofaCleaning,
+    tagline: 'Refresh the fabrics you relax on every day.',
+    shortDescription:
+      'Careful cleaning for sofas, armchairs, cushions, and upholstered furniture.',
+    description: [
+      'Upholstered furniture collects dust, spills, and everyday wear. Our upholstery cleaning service refreshes sofas, chairs, and cushions using methods suited to each fabric type.',
+      'Let us know about the materials and any specific marks when you book so our team can prepare the right approach.',
+    ],
+    idealFor: ['Fabric sofas and armchairs', 'Dining and office chairs', 'Homes with pets or children'],
+    benefits: [
+      { title: 'Fabric-appropriate care', description: 'Methods chosen to suit the material being cleaned.' },
+      { title: 'Revived appearance', description: 'Help restore the look and feel of well-used furniture.' },
+      { title: 'Fresher living spaces', description: 'Reduce dust and odours trapped in soft furnishings.' },
+    ],
+    included: [
+      'Fabric inspection before cleaning',
+      'Vacuuming of seats, crevices, and cushions',
+      'Treatment of visible marks where suitable',
+      'Cleaning method matched to fabric care codes',
+      'Guidance on drying time and aftercare',
+    ],
+    pricing: { note: 'Upholstery pricing depends on the number and size of items and their fabric type.' },
+    faqs: [
+      {
+        question: 'Can every stain be removed?',
+        answer: 'Results depend on the fabric and the type and age of the stain. Our team will set expectations before starting.',
+      },
+      {
+        question: 'How long until I can use my sofa again?',
+        answer: 'Drying time varies by method and fabric. Aftercare guidance will be provided on the day.',
+      },
+    ],
+  },
+  {
+    id: 'post-construction',
+    name: 'Post-Construction Cleaning',
+    category: 'commercial',
+    icon: HardHat,
+    image: images.postConstruction,
+    tagline: 'From building site to move-in ready.',
+    shortDescription:
+      'Removal of dust, debris, and residue after renovations or new builds.',
+    description: [
+      'Renovation and construction projects leave behind fine dust, residue, and debris that ordinary cleaning cannot handle. Our post-construction service prepares newly built or renovated spaces for use.',
+      'Share details about the project and its stage of completion so the right team and equipment can be planned for your space.',
+    ],
+    idealFor: ['Home renovations', 'New builds and fit-outs', 'Commercial refurbishments'],
+    benefits: [
+      { title: 'Dust-focused process', description: 'Systematic removal of fine construction dust from surfaces and fixtures.' },
+      { title: 'Ready for handover', description: 'Prepare spaces for occupants, clients, or final inspections.' },
+      { title: 'Safe, careful work', description: 'Attention to new finishes, fixtures, and fittings.' },
+    ],
+    included: [
+      'Removal of light debris and packaging',
+      'Dusting of walls, ceilings, vents, and fixtures',
+      'Cleaning of windows, frames, and glass',
+      'Removal of paint splatter and residue where suitable',
+      'Detailed floor cleaning for all surface types',
+      'Final wipe-down of kitchens and bathrooms',
+    ],
+    pricing: { note: 'Post-construction projects are quoted individually after reviewing the site and scope.' },
+    faqs: [
+      {
+        question: 'When should I book a post-construction clean?',
+        answer: 'Book once major works are complete and trades have finished on site, so the space stays clean afterwards.',
+      },
+      {
+        question: 'Do you remove heavy construction waste?',
+        answer: 'The service focuses on cleaning. Removal of heavy or bulk waste should be arranged with your contractor.',
+      },
+    ],
+  },
+]
+
+export function getServiceById(id: string | undefined): Service | undefined {
+  return services.find((service) => service.id === id)
+}
+
+export function getCategoryLabel(category: ServiceCategory): string {
+  return serviceCategories.find((c) => c.id === category)?.label ?? category
+}
