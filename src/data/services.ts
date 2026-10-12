@@ -1,15 +1,19 @@
 import { Building2, HardHat, Home, PackageOpen, Sofa, Sparkles } from 'lucide-react'
 import { images } from '../assets/images'
-import type { Service, ServiceCategory } from '../types'
+import type { Service, ServiceCategory, ServicePricing } from '../types'
 
 /**
  * Central service catalogue. Update copy, images, inclusions, and pricing here —
  * every page (landing, directory, detail, booking, navigation) reads from this file.
- * Pricing is intentionally unconfirmed: set `pricing.startingAt` once prices are approved.
+ * Pricing is a flat rate per booking — change STANDARD_PRICING to update every service.
  */
 
-const DEFAULT_PRICING_NOTE =
-  'Pricing is confirmed after we understand your space. Final quotes depend on property size, condition, and any add-ons you choose.'
+const STANDARD_PRICING: ServicePricing = {
+  amount: 200,
+  currency: 'USD',
+  startingAt: '$200',
+  note: 'Flat rate per booking. Includes everything listed under “What’s included”.',
+}
 
 export const serviceCategories: { id: ServiceCategory | 'all'; label: string }[] = [
   { id: 'all', label: 'All services' },
@@ -46,7 +50,7 @@ export const services: Service[] = [
       'Making beds and tidying living areas',
       'Emptying bins and replacing liners',
     ],
-    pricing: { note: DEFAULT_PRICING_NOTE },
+    pricing: STANDARD_PRICING,
     faqs: [
       {
         question: 'Do I need to provide cleaning supplies?',
@@ -85,7 +89,7 @@ export const services: Service[] = [
       'Behind and under movable furniture and appliances',
       'Window sills, tracks, and interior glass',
     ],
-    pricing: { note: DEFAULT_PRICING_NOTE },
+    pricing: STANDARD_PRICING,
     faqs: [
       {
         question: 'How long does a deep clean take?',
@@ -124,7 +128,7 @@ export const services: Service[] = [
       'Vacuuming and mopping of floors',
       'Emptying bins and recycling',
     ],
-    pricing: { note: 'Commercial pricing is quoted per site based on floor area, frequency, and scope of work.' },
+    pricing: STANDARD_PRICING,
     faqs: [
       {
         question: 'Can you clean outside of business hours?',
@@ -163,7 +167,7 @@ export const services: Service[] = [
       'Floors vacuumed and mopped throughout',
       'Windows, sills, and tracks',
     ],
-    pricing: { note: DEFAULT_PRICING_NOTE },
+    pricing: STANDARD_PRICING,
     faqs: [
       {
         question: 'Does the property need to be empty?',
@@ -201,7 +205,7 @@ export const services: Service[] = [
       'Cleaning method matched to fabric care codes',
       'Guidance on drying time and aftercare',
     ],
-    pricing: { note: 'Upholstery pricing depends on the number and size of items and their fabric type.' },
+    pricing: STANDARD_PRICING,
     faqs: [
       {
         question: 'Can every stain be removed?',
@@ -240,7 +244,7 @@ export const services: Service[] = [
       'Detailed floor cleaning for all surface types',
       'Final wipe-down of kitchens and bathrooms',
     ],
-    pricing: { note: 'Post-construction projects are quoted individually after reviewing the site and scope.' },
+    pricing: STANDARD_PRICING,
     faqs: [
       {
         question: 'When should I book a post-construction clean?',

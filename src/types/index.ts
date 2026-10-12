@@ -22,8 +22,11 @@ export interface Feature {
 }
 
 export interface ServicePricing {
-  /** Display string such as "From $120". Leave undefined until prices are confirmed. */
-  startingAt?: string
+  /** Price per booking in whole currency units (used for checkout). */
+  amount: number
+  currency: 'USD'
+  /** Display string such as "$200". */
+  startingAt: string
   note: string
 }
 

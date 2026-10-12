@@ -22,13 +22,13 @@ export const siteConfig = {
   description:
     'Omegs offers professional residential and commercial cleaning services, with simple booking and service management through the Omegs mobile app.',
   contact: {
-    // Placeholder contact details — replace before launch.
-    phone: '+1 (555) 010-0199',
-    phoneHref: 'tel:+15550100199',
-    email: 'hello@omegs.example',
-    supportEmail: 'support@omegs.example',
+    phone: '+254 701 254 244',
+    phoneHref: 'tel:+254701254244',
+    email: 'bramkirimi@gmail.com',
+    supportEmail: 'bramkirimi@gmail.com',
+    // Placeholder — replace once a business address is confirmed.
     address: 'Business address to be confirmed',
-    hours: 'Support hours to be confirmed',
+    hours: 'Open 24 hours, 7 days a week',
   },
   social: [
     // Set `url` to a real profile link to activate each icon.

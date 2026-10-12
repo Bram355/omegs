@@ -95,7 +95,7 @@ export default function ServiceDetailPage() {
                 <div className="flex items-center gap-2 text-sm font-semibold text-mint-700">
                   <CircleDollarSign className="size-5" aria-hidden="true" /> Pricing
                 </div>
-                <p className="mt-3 text-2xl font-bold text-brand-950">{service.pricing.startingAt ?? 'Quote on request'}</p>
+                <p className="mt-3 text-2xl font-bold text-brand-950">{service.pricing.startingAt}</p>
                 <p className="mt-2 text-sm leading-relaxed text-slate-600">{service.pricing.note}</p>
                 <ButtonLink to={`/book?service=${service.id}`} className="mt-6 w-full">
                   <CalendarPlus className="size-4" aria-hidden="true" /> Book now

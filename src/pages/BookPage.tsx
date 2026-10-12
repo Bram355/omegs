@@ -107,7 +107,7 @@ export default function BookPage() {
                   <p className="mt-2 text-sm leading-relaxed text-slate-600">{selected.shortDescription}</p>
                   <p className="mt-4 text-sm text-slate-600">
                     <span className="font-semibold text-brand-950">Pricing: </span>
-                    {selected.pricing.startingAt ?? 'Quote on request'}
+                    {selected.pricing.startingAt}
                   </p>
                   <Link to={`/services/${selected.id}`} className="mt-4 inline-flex items-center gap-1 rounded text-sm font-semibold text-brand-800 hover:text-mint-700">
                     What’s included <ArrowRight className="size-4" aria-hidden="true" />

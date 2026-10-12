@@ -29,7 +29,7 @@ export const brandPromises: Feature[] = [
   {
     icon: ReceiptText,
     title: 'Transparent pricing',
-    description: 'Clear quotes before your clean, with no hidden extras added after the fact.',
+    description: 'One clear flat rate per service, with no hidden extras added after the fact.',
   },
   {
     icon: CalendarClock,
