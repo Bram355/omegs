@@ -274,9 +274,11 @@ export function Navbar() {
           <div className="hidden items-center gap-2 lg:flex">
             {isAuthenticated ? <UserMenu /> : <NavLink to="/login" className={navLinkClass}>Login</NavLink>}
           </div>
-          <ButtonLink to="/book" size="md" className="hidden sm:inline-flex">
-            <CalendarPlus className="size-4" aria-hidden="true" /> Book a Cleaning
-          </ButtonLink>
+          <div className="hidden sm:block">
+            <ButtonLink to="/book" size="md">
+              <CalendarPlus className="size-4" aria-hidden="true" /> Book a Cleaning
+            </ButtonLink>
+          </div>
           <button
             type="button"
             className="grid size-11 place-items-center rounded-full text-brand-950 transition-colors hover:bg-slate-100 lg:hidden"
