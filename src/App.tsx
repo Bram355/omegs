@@ -13,6 +13,7 @@ const AboutPage = lazy(() => import('./pages/AboutPage'))
 const ContactPage = lazy(() => import('./pages/ContactPage'))
 const DownloadPage = lazy(() => import('./pages/DownloadPage'))
 const BookPage = lazy(() => import('./pages/BookPage'))
+const AdminPage = lazy(() => import('./pages/AdminPage'))
 const LegalPage = lazy(() => import('./pages/LegalPage'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))
 const SignupPage = lazy(() => import('./pages/SignupPage'))
@@ -31,6 +32,7 @@ const router = createBrowserRouter([
       { path: '/privacy', element: <LegalPage doc="privacy" /> },
       { path: '/terms', element: <LegalPage doc="terms" /> },
       { path: '/book', element: <RequireAuth><BookPage /></RequireAuth> },
+      { path: '/admin', element: <RequireAuth><AdminPage /></RequireAuth> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },
